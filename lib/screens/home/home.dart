@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
 import 'package:todo_list/data/data.dart';
 import 'package:todo_list/data/repo/repository.dart';
 import 'package:todo_list/main.dart';
@@ -34,12 +34,13 @@ class _HomeScreenState extends State<HomeScreen>
   late List<AlarmSettings> alarms;
   static StreamSubscription<AlarmSettings>? subscription;
      
-        void loadAlarms() {
-    setState(() {
-      alarms = Alarm.getAlarms();
-      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-    });
-  }
+    void loadAlarms() async{
+      final fetchedAlarms = await Alarm.getAlarms();
+      fetchedAlarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+      setState(() {
+        alarms = fetchedAlarms;
+      });
+    }
 
   Future<void> checkAndroidNotificationPermission() async {
     final status = await Permission.notification.status;
@@ -421,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                       .headlineMedium),
                                               InkWell(
                                                 onTap: () {
-                                                  Share.share('https://github.com/Rmaawn');
+                                                  // Share.share('https://github.com/Rmaawn');
                                                 },
                                                 child: Icon(
                                                   Icons.share,
