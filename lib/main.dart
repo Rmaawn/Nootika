@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         // textTheme: TextTheme(headlineMedium: TextStyle(fontSize: 84)),
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
