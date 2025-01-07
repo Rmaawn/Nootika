@@ -15,6 +15,7 @@ import 'package:todo_list/main.dart';
 import 'package:todo_list/screens/edit/cubit/edit_task_cubit.dart';
 import 'package:todo_list/screens/edit/edit.dart';
 import 'package:todo_list/screens/home/bloc/task_list_bloc.dart';
+import 'package:todo_list/screens/setting/setting.dart';
 import 'package:todo_list/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,14 +34,40 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late List<AlarmSettings> alarms;
   static StreamSubscription<AlarmSettings>? subscription;
-     
-    void loadAlarms() async{
-      final fetchedAlarms = await Alarm.getAlarms();
-      fetchedAlarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-      setState(() {
-        alarms = fetchedAlarms;
-      });
-    }
+  late AnimationController _animationController;
+  late Animation<double> _borderRadiusAnimation;
+
+  @override
+  void initState() {
+    checkAndroidNotificationPermission();
+    checkAndroidScheduleExactAlarmPermission();
+    loadAlarms();
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _borderRadiusAnimation = Tween<double>(begin: 0.0, end: 24.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void loadAlarms() async {
+    final fetchedAlarms = await Alarm.getAlarms();
+    fetchedAlarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    setState(() {
+      alarms = fetchedAlarms;
+    });
+  }
 
   Future<void> checkAndroidNotificationPermission() async {
     final status = await Permission.notification.status;
@@ -80,23 +107,7 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
   }
-
-
-
-  final TextEditingController controller = TextEditingController();
-
-  late AnimationController _animationController;
-  @override
-  void initState() {
-    checkAndroidNotificationPermission();
-    checkAndroidScheduleExactAlarmPermission();
-    loadAlarms();
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
-    super.initState();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600));
-  }
-
+  final TextEditingController searchcontroller = TextEditingController();
   bool menuIsOpen = false;
   void _iconTapped() {
     setState(() {
@@ -110,9 +121,6 @@ class _HomeScreenState extends State<HomeScreen>
       menuIsOpen = false;
     }
   }
-
-  bool isVibre = true;
-  double volume = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -129,211 +137,18 @@ class _HomeScreenState extends State<HomeScreen>
             ], begin: Alignment.bottomCenter, end: Alignment.topCenter)),
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 280,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: ExpansionTile(
-                    collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: Colors.cyanAccent,
-                    expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-                    title: const Text('Sound'),
-                    children: [
-                      Slider(
-                        min: 0,
-                        max: 100,
-                        value: volume,
-                        // label:volume.toString(),
-                        onChanged: (double value) {
-                          setState(() {
-                            volume = value;
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 280,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: ExpansionTile(
-                    collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: Colors.cyanAccent,
-                    expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-                    title: const Text('Vibration'),
-                    children: [
-                      SwitchListTile(
-                        title: isVibre ? const Text('On') : const Text('Off'),
-                        value: isVibre,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isVibre = value;
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 280,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: ExpansionTile(
-                    collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: Colors.cyanAccent,
-                    expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-                    title: const Text('Contact Us'),
-                    children: [
-                      ListTile(
-                        title: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Telegram'),
-                                InkWell(
-                                    onTap: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 3),
-                                              backgroundColor:
-                                                  const Color(0xff399918),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    color:
-                                                        Colors.green.shade900,
-                                                    width: 1),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              content: const Row(
-                                                children: [
-                                                  Text('Copied'),
-                                                  SizedBox(width: 4),
-                                                  Icon(
-                                                    Icons.check_circle_sharp,
-                                                    color: Colors.white,
-                                                  )
-                                                ],
-                                              )));
-                                      Clipboard.setData(const ClipboardData(
-                                          text: '@R_mmawn'));
-                                    },
-                                    child: const Icon(
-                                      Icons.content_copy,
-                                      size: 22,
-                                    )),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Instagramn'),
-                                InkWell(
-                                    onTap: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 2),
-                                              backgroundColor:
-                                                  const Color(0xff399918),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    color:
-                                                        Colors.green.shade900,
-                                                    width: 1),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              content: const Row(
-                                                children: [
-                                                  Text('Copied'),
-                                                  SizedBox(width: 4),
-                                                  Icon(
-                                                    Icons.check_circle_sharp,
-                                                    color: Colors.white,
-                                                  )
-                                                ],
-                                              )));
-                                      Clipboard.setData(
-                                          const ClipboardData(text: 'arm.wan'));
-                                    },
-                                    child: const Icon(
-                                      Icons.content_copy,
-                                      size: 22,
-                                    )),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Github'),
-                                InkWell(
-                                    onTap: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 2),
-                                              backgroundColor:
-                                                  const Color(0xff399918),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    color:
-                                                        Colors.green.shade900,
-                                                    width: 1),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              content: const Row(
-                                                children: [
-                                                  Text('Copied'),
-                                                  SizedBox(width: 4),
-                                                  Icon(
-                                                    Icons.check_circle_sharp,
-                                                    color: Colors.white,
-                                                  )
-                                                ],
-                                              )));
-                                      Clipboard.setData(const ClipboardData(
-                                          text: 'https://github.com/Rmaawn'));
-                                    },
-                                    child: const Icon(
-                                      Icons.content_copy,
-                                      size: 22,
-                                    )),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            const Text('Made With ❤️ By Rmaan'),
-                            const Text('v0.10')
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+  ElevatedButton(
+    onPressed: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const SettingPage(),
+        ),
+      );
+    },
+    child: const Text("Settings"),
+  ),
+],
           ),
           TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: menuvalue),
@@ -346,172 +161,178 @@ class _HomeScreenState extends State<HomeScreen>
                     ..setEntry(3, 2, 0.001)
                     ..setEntry(0, 3, 260 * val)
                     ..rotateY((pi / 6) * val),
-                  child: Scaffold(
-                    appBar: AppBar(
-                      systemOverlayStyle: const SystemUiOverlayStyle(
-                          statusBarColor: Color(0xff794CFF),
-                          statusBarBrightness: Brightness.light),
-                      toolbarHeight: 0,
-                      backgroundColor: const Color(0xff794CFF),
-                    ),
-                    // backgroundColor: Color.fromARGB(255, 208, 193, 234),
-                    floatingActionButtonLocation:
-                        FloatingActionButtonLocation.centerFloat,
-                    floatingActionButton: FloatingActionButton.extended(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => BlocProvider<EditTaskCubit>(
-                                  create: (context) => EditTaskCubit(
-                                      TaskEntity(),
-                                      context.read<Repository<TaskEntity>>()),
-                                  child: const EditTaskScreen(),
-                                )));
-                      },
-                      label: const Row(
-                        children: [
-                          Text('Add New Task'),
-                          SizedBox(width: 4),
-                          Icon(CupertinoIcons.add),
-                        ],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(_borderRadiusAnimation.value),
+                    topLeft: Radius.circular(_borderRadiusAnimation.value),
+                  ),
+                    child: Scaffold(
+                      appBar: AppBar(
+                        systemOverlayStyle: const SystemUiOverlayStyle(
+                            statusBarColor: Color(0xff794CFF),
+                            statusBarBrightness: Brightness.light),
+                        toolbarHeight: 0,
+                        backgroundColor: const Color(0xff794CFF),
                       ),
-                    ),
-                    body: BlocProvider<TaskListBloc>(
-                      create: (context) =>
-                          TaskListBloc(context.read<Repository<TaskEntity>>()),
-                      child: SafeArea(
-                        child: Column(
+                      // backgroundColor: Color.fromARGB(255, 208, 193, 234),
+                      floatingActionButtonLocation:
+                          FloatingActionButtonLocation.centerFloat,
+                      floatingActionButton: FloatingActionButton.extended(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => BlocProvider<EditTaskCubit>(
+                                    create: (context) => EditTaskCubit(
+                                        TaskEntity(),
+                                        context.read<Repository<TaskEntity>>()),
+                                    child: const EditTaskScreen(),
+                                  )));
+                        },
+                        label: const Row(
                           children: [
-                            SizedBox(
-                              height: 90,
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    height: 72,
-                                    decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.only(
-                                            bottomRight: Radius.circular(8),
-                                            bottomLeft: Radius.circular(8)),
-                                        gradient: LinearGradient(colors: [
-                                          // more gradient
-                                          // Color(0xFFFF9000),
-                                          ThemeData.colorScheme.primary,
-                                          ThemeData
-                                              .colorScheme.primaryContainer,
-                                        ])),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: _iconTapped,
-                                                child: AnimatedIcon(
-                                                  icon:
-                                                      AnimatedIcons.menu_close,
-                                                  progress:
-                                                      _animationController,
-                                                  size: 32,
-                                                  color: Colors.white,
+                            Text('Add New Task'),
+                            SizedBox(width: 4),
+                            Icon(CupertinoIcons.add),
+                          ],
+                        ),
+                      ),
+                      body: BlocProvider<TaskListBloc>(
+                        create: (context) =>
+                            TaskListBloc(context.read<Repository<TaskEntity>>()),
+                        child: SafeArea(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 90,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 72,
+                                      decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.only(
+                                              bottomRight: Radius.circular(8),
+                                              bottomLeft: Radius.circular(8)),
+                                          gradient: LinearGradient(colors: [
+                                            // more gradient
+                                            // Color(0xFFFF9000),
+                                            ThemeData.colorScheme.primary,
+                                            ThemeData
+                                                .colorScheme.primaryContainer,
+                                          ])),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: _iconTapped,
+                                                  child: AnimatedIcon(
+                                                    icon:
+                                                        AnimatedIcons.menu_close,
+                                                    progress:
+                                                        _animationController,
+                                                    size: 32,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ),
-                                              Text('To Do List',
-                                                  style: ThemeData.textTheme
-                                                      .headlineMedium),
-                                              InkWell(
-                                                onTap: () {
-                                                  // Share.share('https://github.com/Rmaawn');
-                                                },
-                                                child: Icon(
-                                                  Icons.share,
-                                                  color: ThemeData
-                                                      .colorScheme.onPrimary,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                        ],
+                                                Text('To Do List',
+                                                    style: ThemeData.textTheme
+                                                        .headlineMedium),
+                                                InkWell(
+                                                  onTap: () {
+                                                    // Share.share('https://github.com/Rmaawn');
+                                                  },
+                                                  child: Icon(
+                                                    Icons.share,
+                                                    color: ThemeData
+                                                        .colorScheme.onPrimary,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      height: 38,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          color:
-                                              ThemeData.colorScheme.onPrimary,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              spreadRadius: 1,
-                                              blurRadius: 20,
-                                            )
-                                          ]),
-                                      child: Builder(builder: (context) {
-                                        return TextField(
-                                          onTapOutside: (event) {
-                                            FocusScope.of(context).unfocus();
-                                          },
-                                          onChanged: (value) {
-                                            context
-                                                .read<TaskListBloc>()
-                                                .add(TaskListSearch(value));
-                                          },
-                                          controller: controller,
-                                          decoration: const InputDecoration(
-                                              prefixIcon: Icon(
-                                                  CupertinoIcons.search,
-                                                  color: primaryColor),
-                                              label: Text('Search Tasks...')),
-                                        );
-                                      }),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 16),
+                                        height: 38,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color:
+                                                ThemeData.colorScheme.onPrimary,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color:
+                                                    Colors.black.withOpacity(0.1),
+                                                spreadRadius: 1,
+                                                blurRadius: 20,
+                                              )
+                                            ]),
+                                        child: Builder(builder: (context) {
+                                          return TextField(
+                                            onTapOutside: (event) {
+                                              FocusScope.of(context).unfocus();
+                                            },
+                                            onChanged: (value) {
+                                              context
+                                                  .read<TaskListBloc>()
+                                                  .add(TaskListSearch(value));
+                                            },
+                                            controller: searchcontroller,
+                                            decoration: const InputDecoration(
+                                                prefixIcon: Icon(
+                                                    CupertinoIcons.search,
+                                                    color: primaryColor),
+                                                label: Text('Search Tasks...')),
+                                          );
+                                        }),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(child: Consumer<Repository<TaskEntity>>(
-                              builder: (context, model, child) {
-                                context
-                                    .read<TaskListBloc>()
-                                    .add(TaskListStarted());
-                                return BlocBuilder<TaskListBloc, TaskListState>(
-                                  builder: (context, state) {
-                                    if (state is TaskListSuccess) {
-                                      return TaskList(
-                                          items: state.items,
-                                          themeData: ThemeData);
-                                    } else if (state is TaskListEmpty) {
-                                      return const EmptyState();
-                                    } else if (state is TaskListLoading ||
-                                        state is TaskListInitial) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    } else if (state is TaskListError) {
-                                      return Center(
-                                        child: Text(state.ErrorMessage),
-                                      );
-                                    } else {
-                                      throw Exception('state is not valid..');
-                                    }
-                                  },
-                                );
-                              },
-                            )),
-                          ],
+                              Expanded(child: Consumer<Repository<TaskEntity>>(
+                                builder: (context, model, child) {
+                                  context
+                                      .read<TaskListBloc>()
+                                      .add(TaskListStarted());
+                                  return BlocBuilder<TaskListBloc, TaskListState>(
+                                    builder: (context, state) {
+                                      if (state is TaskListSuccess) {
+                                        return TaskList(
+                                            items: state.items,
+                                            themeData: ThemeData);
+                                      } else if (state is TaskListEmpty) {
+                                        return const EmptyState();
+                                      } else if (state is TaskListLoading ||
+                                          state is TaskListInitial) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (state is TaskListError) {
+                                        return Center(
+                                          child: Text(state.ErrorMessage),
+                                        );
+                                      } else {
+                                        throw Exception('state is not valid..');
+                                      }
+                                    },
+                                  );
+                                },
+                              )),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -596,6 +417,16 @@ class TaskList extends StatelessWidget {
                                         .read<TaskListBloc>()
                                         .add(TaskListDeleteAll());
                                     Navigator.of(dialogcontext).pop(true);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: const Text('All tasks deleted successfully!'),backgroundColor: primaryColor, 
+                                      duration: const Duration(seconds: 1),
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        side: const BorderSide(
+                                            color: primaryContainer, width: 1),
+                                        borderRadius: BorderRadius.circular(10),)),
+                                        );
+
                                   },
                                   child: const Text('Yes'),
                                 ),
