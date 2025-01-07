@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late List<AlarmSettings> alarms;
   static StreamSubscription<AlarmSettings>? subscription;
-  late AnimationController _animationController;
+  late AnimationController _menuAnimationController;
   late Animation<double> _borderRadiusAnimation;
 
   @override
@@ -45,19 +45,20 @@ class _HomeScreenState extends State<HomeScreen>
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     super.initState();
 
-    _animationController = AnimationController(
+    _menuAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
 
     _borderRadiusAnimation = Tween<double>(begin: 0.0, end: 24.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+          parent: _menuAnimationController, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _menuAnimationController.dispose();
     super.dispose();
   }
 
@@ -107,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
   }
+
   final TextEditingController searchcontroller = TextEditingController();
   bool menuIsOpen = false;
   void _iconTapped() {
@@ -114,10 +116,10 @@ class _HomeScreenState extends State<HomeScreen>
       menuvalue == 0 ? menuvalue = 1 : menuvalue = 0;
     });
     if (menuIsOpen == false) {
-      _animationController.forward();
+      _menuAnimationController.forward();
       menuIsOpen = true;
     } else {
-      _animationController.reverse();
+      _menuAnimationController.reverse();
       menuIsOpen = false;
     }
   }
@@ -136,19 +138,30 @@ class _HomeScreenState extends State<HomeScreen>
               primaryColor,
             ], begin: Alignment.bottomCenter, end: Alignment.topCenter)),
           ),
-          Column(
-            children: [
-  ElevatedButton(
-    onPressed: () {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const SettingPage(),
-        ),
-      );
-    },
-    child: const Text("Settings"),
-  ),
-],
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  label: const Text(
+                    "Settings",
+                    style: TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Colors.white, iconColor: Colors.grey),
+                  onPressed: () {
+                    Navigator.of(context).push(effectRoute(SettingsPage()));
+                    _iconTapped();
+                  },
+                )
+              ],
+            ),
           ),
           TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: menuvalue),
@@ -163,9 +176,9 @@ class _HomeScreenState extends State<HomeScreen>
                     ..rotateY((pi / 6) * val),
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(_borderRadiusAnimation.value),
-                    topLeft: Radius.circular(_borderRadiusAnimation.value),
-                  ),
+                      bottomLeft: Radius.circular(_borderRadiusAnimation.value),
+                      topLeft: Radius.circular(_borderRadiusAnimation.value),
+                    ),
                     child: Scaffold(
                       appBar: AppBar(
                         systemOverlayStyle: const SystemUiOverlayStyle(
@@ -196,8 +209,8 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                       body: BlocProvider<TaskListBloc>(
-                        create: (context) =>
-                            TaskListBloc(context.read<Repository<TaskEntity>>()),
+                        create: (context) => TaskListBloc(
+                            context.read<Repository<TaskEntity>>()),
                         child: SafeArea(
                           child: Column(
                             children: [
@@ -224,15 +237,16 @@ class _HomeScreenState extends State<HomeScreen>
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 GestureDetector(
                                                   onTap: _iconTapped,
                                                   child: AnimatedIcon(
-                                                    icon:
-                                                        AnimatedIcons.menu_close,
+                                                    icon: AnimatedIcons
+                                                        .menu_close,
                                                     progress:
-                                                        _animationController,
+                                                        _menuAnimationController,
                                                     size: 32,
                                                     color: Colors.white,
                                                   ),
@@ -273,8 +287,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 ThemeData.colorScheme.onPrimary,
                                             boxShadow: [
                                               BoxShadow(
-                                                color:
-                                                    Colors.black.withOpacity(0.1),
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
                                                 spreadRadius: 1,
                                                 blurRadius: 20,
                                               )
@@ -307,7 +321,8 @@ class _HomeScreenState extends State<HomeScreen>
                                   context
                                       .read<TaskListBloc>()
                                       .add(TaskListStarted());
-                                  return BlocBuilder<TaskListBloc, TaskListState>(
+                                  return BlocBuilder<TaskListBloc,
+                                      TaskListState>(
                                     builder: (context, state) {
                                       if (state is TaskListSuccess) {
                                         return TaskList(
@@ -418,15 +433,20 @@ class TaskList extends StatelessWidget {
                                         .add(TaskListDeleteAll());
                                     Navigator.of(dialogcontext).pop(true);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: const Text('All tasks deleted successfully!'),backgroundColor: primaryColor, 
-                                      duration: const Duration(seconds: 1),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        side: const BorderSide(
-                                            color: primaryContainer, width: 1),
-                                        borderRadius: BorderRadius.circular(10),)),
-                                        );
-
+                                      SnackBar(
+                                          content: const Text(
+                                              'All tasks deleted successfully!'),
+                                          backgroundColor: primaryColor,
+                                          duration: const Duration(seconds: 1),
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            side: const BorderSide(
+                                                color: primaryContainer,
+                                                width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          )),
+                                    );
                                   },
                                   child: const Text('Yes'),
                                 ),
