@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:todo_list/data/data.dart';
 import 'package:todo_list/data/repo/repository.dart';
 import 'package:todo_list/main.dart';
@@ -179,174 +179,193 @@ class _HomeScreenState extends State<HomeScreen>
                       bottomLeft: Radius.circular(_borderRadiusAnimation.value),
                       topLeft: Radius.circular(_borderRadiusAnimation.value),
                     ),
-                    child: Scaffold(
-                      appBar: AppBar(
-                        systemOverlayStyle: const SystemUiOverlayStyle(
-                            statusBarColor: Color(0xff794CFF),
-                            statusBarBrightness: Brightness.light),
-                        toolbarHeight: 0,
-                        backgroundColor: const Color(0xff794CFF),
-                      ),
-                      // backgroundColor: Color.fromARGB(255, 208, 193, 234),
-                      floatingActionButtonLocation:
-                          FloatingActionButtonLocation.centerFloat,
-                      floatingActionButton: FloatingActionButton.extended(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => BlocProvider<EditTaskCubit>(
-                                    create: (context) => EditTaskCubit(
-                                        TaskEntity(),
-                                        context.read<Repository<TaskEntity>>()),
-                                    child: const EditTaskScreen(),
-                                  )));
-                        },
-                        label: const Row(
-                          children: [
-                            Text('Add New Task'),
-                            SizedBox(width: 4),
-                            Icon(CupertinoIcons.add),
-                          ],
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: (e) {
+                        if (e.delta.dx > 0) {
+                          _iconTapped();
+                        }else{
+                          _iconTapped();
+                        }
+                      },
+                      child: Scaffold(
+                        appBar: AppBar(
+                          systemOverlayStyle: const SystemUiOverlayStyle(
+                              statusBarColor: Color(0xff794CFF),
+                              statusBarBrightness: Brightness.light),
+                          toolbarHeight: 0,
+                          backgroundColor: const Color(0xff794CFF),
                         ),
-                      ),
-                      body: BlocProvider<TaskListBloc>(
-                        create: (context) => TaskListBloc(
-                            context.read<Repository<TaskEntity>>()),
-                        child: SafeArea(
-                          child: Column(
+                        // backgroundColor: Color.fromARGB(255, 208, 193, 234),
+                        floatingActionButtonLocation:
+                            FloatingActionButtonLocation.centerFloat,
+                        floatingActionButton: FloatingActionButton.extended(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    BlocProvider<EditTaskCubit>(
+                                      create: (context) => EditTaskCubit(
+                                          TaskEntity(),
+                                          context
+                                              .read<Repository<TaskEntity>>()),
+                                      child: const EditTaskScreen(),
+                                    )));
+                          },
+                          label: const Row(
                             children: [
-                              SizedBox(
-                                height: 90,
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      height: 72,
-                                      decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.only(
-                                              bottomRight: Radius.circular(8),
-                                              bottomLeft: Radius.circular(8)),
-                                          gradient: LinearGradient(colors: [
-                                            // more gradient
-                                            // Color(0xFFFF9000),
-                                            ThemeData.colorScheme.primary,
-                                            ThemeData
-                                                .colorScheme.primaryContainer,
-                                          ])),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: _iconTapped,
-                                                  child: AnimatedIcon(
-                                                    icon: AnimatedIcons
-                                                        .menu_close,
-                                                    progress:
-                                                        _menuAnimationController,
-                                                    size: 32,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                Text('To Do List',
-                                                    style: ThemeData.textTheme
-                                                        .headlineMedium),
-                                                InkWell(
-                                                  onTap: () {
-                                                    // Share.share('https://github.com/Rmaawn');
-                                                  },
-                                                  child: Icon(
-                                                    Icons.share,
-                                                    color: ThemeData
-                                                        .colorScheme.onPrimary,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 8,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 16),
-                                        height: 38,
-                                        width: double.infinity,
+                              Text('Add New Task'),
+                              SizedBox(width: 4),
+                              Icon(CupertinoIcons.add),
+                            ],
+                          ),
+                        ),
+                        body: BlocProvider<TaskListBloc>(
+                          create: (context) => TaskListBloc(
+                              context.read<Repository<TaskEntity>>()),
+                          child: SafeArea(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 90,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        height: 72,
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(8),
-                                            color:
-                                                ThemeData.colorScheme.onPrimary,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                spreadRadius: 1,
-                                                blurRadius: 20,
-                                              )
-                                            ]),
-                                        child: Builder(builder: (context) {
-                                          return TextField(
-                                            onTapOutside: (event) {
-                                              FocusScope.of(context).unfocus();
-                                            },
-                                            onChanged: (value) {
-                                              context
-                                                  .read<TaskListBloc>()
-                                                  .add(TaskListSearch(value));
-                                            },
-                                            controller: searchcontroller,
-                                            decoration: const InputDecoration(
-                                                prefixIcon: Icon(
-                                                    CupertinoIcons.search,
-                                                    color: primaryColor),
-                                                label: Text('Search Tasks...')),
-                                          );
-                                        }),
+                                                const BorderRadius.only(
+                                                    bottomRight:
+                                                        Radius.circular(8),
+                                                    bottomLeft:
+                                                        Radius.circular(8)),
+                                            gradient: LinearGradient(colors: [
+                                              // more gradient
+                                              // Color(0xFFFF9000),
+                                              ThemeData.colorScheme.primary,
+                                              ThemeData
+                                                  .colorScheme.primaryContainer,
+                                            ])),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: _iconTapped,
+                                                    child: AnimatedIcon(
+                                                      icon: AnimatedIcons
+                                                          .menu_close,
+                                                      progress:
+                                                          _menuAnimationController,
+                                                      size: 32,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  Text('To Do List',
+                                                      style: ThemeData.textTheme
+                                                          .headlineMedium),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Share.share('https://github.com/Rmaawn');
+                                                    },
+                                                    child: Icon(
+                                                      Icons.share,
+                                                      color: ThemeData
+                                                          .colorScheme
+                                                          .onPrimary,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          height: 38,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              color: ThemeData
+                                                  .colorScheme.onPrimary,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.1),
+                                                  spreadRadius: 1,
+                                                  blurRadius: 20,
+                                                )
+                                              ]),
+                                          child: Builder(builder: (context) {
+                                            return TextField(
+                                              onTapOutside: (event) {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
+                                              onChanged: (value) {
+                                                context
+                                                    .read<TaskListBloc>()
+                                                    .add(TaskListSearch(value));
+                                              },
+                                              controller: searchcontroller,
+                                              decoration: const InputDecoration(
+                                                  prefixIcon: Icon(
+                                                      CupertinoIcons.search,
+                                                      color: primaryColor),
+                                                  label:
+                                                      Text('Search Tasks...')),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Expanded(child: Consumer<Repository<TaskEntity>>(
-                                builder: (context, model, child) {
-                                  context
-                                      .read<TaskListBloc>()
-                                      .add(TaskListStarted());
-                                  return BlocBuilder<TaskListBloc,
-                                      TaskListState>(
-                                    builder: (context, state) {
-                                      if (state is TaskListSuccess) {
-                                        return TaskList(
-                                            items: state.items,
-                                            themeData: ThemeData);
-                                      } else if (state is TaskListEmpty) {
-                                        return const EmptyState();
-                                      } else if (state is TaskListLoading ||
-                                          state is TaskListInitial) {
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else if (state is TaskListError) {
-                                        return Center(
-                                          child: Text(state.ErrorMessage),
-                                        );
-                                      } else {
-                                        throw Exception('state is not valid..');
-                                      }
-                                    },
-                                  );
-                                },
-                              )),
-                            ],
+                                Expanded(
+                                    child: Consumer<Repository<TaskEntity>>(
+                                  builder: (context, model, child) {
+                                    context
+                                        .read<TaskListBloc>()
+                                        .add(TaskListStarted());
+                                    return BlocBuilder<TaskListBloc,
+                                        TaskListState>(
+                                      builder: (context, state) {
+                                        if (state is TaskListSuccess) {
+                                          return TaskList(
+                                              items: state.items,
+                                              themeData: ThemeData);
+                                        } else if (state is TaskListEmpty) {
+                                          return const EmptyState();
+                                        } else if (state is TaskListLoading ||
+                                            state is TaskListInitial) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        } else if (state is TaskListError) {
+                                          return Center(
+                                            child: Text(state.ErrorMessage),
+                                          );
+                                        } else {
+                                          throw Exception(
+                                              'state is not valid..');
+                                        }
+                                      },
+                                    );
+                                  },
+                                )),
+                              ],
+                            ),
                           ),
                         ),
                       ),

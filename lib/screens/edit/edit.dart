@@ -1,9 +1,8 @@
 import 'package:alarm/alarm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:todo_list/screens/edit/cubit/edit_task_cubit.dart';
 import 'package:todo_list/widgets.dart';
 import 'package:todo_list/data/data.dart';
@@ -74,7 +73,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         ],
                       )));
                 }else{
-                // Share.share(context.read<EditTaskCubit>().state.task.name);
+                Share.share(context.read<EditTaskCubit>().state.task.name);
                 }
               },
               child: const Icon(Icons.share, color: primaryTextColor),
