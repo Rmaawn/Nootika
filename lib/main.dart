@@ -19,6 +19,7 @@ void main() async {
   Hive.registerAdapter(PriorityAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
   await Hive.openBox<TaskEntity>(taskboxname);
+  await Hive.openBox('settings');
 
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: primaryColor));

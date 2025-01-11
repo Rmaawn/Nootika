@@ -2,6 +2,7 @@ import 'package:alarm/alarm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:todo_list/screens/edit/cubit/edit_task_cubit.dart';
 import 'package:todo_list/widgets.dart';
@@ -21,12 +22,16 @@ DateTime selectedDate = DateTime.now();
 class _EditTaskScreenState extends State<EditTaskScreen> {
   // late final TextEditingController _controller =
   // TextEditingController(text: widget.task.name);
-
+  late double soundLevel;
+  late bool isVibre;
   late final TextEditingController titleTaskController;
   late final TextEditingController descriptionTaskController;
 
   @override
   void initState() {
+    final box = Hive.box('settings');
+    soundLevel = box.get('soundLevel', defaultValue: 6);
+    isVibre = box.get('isVibre', defaultValue: true);
     titleTaskController = TextEditingController(
         text: context.read<EditTaskCubit>().state.task.name);
     descriptionTaskController = TextEditingController(
@@ -96,8 +101,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             dateTime: alarmDateTime,
             assetAudioPath: 'assets/blank.mp3',
             loopAudio: true,
-            vibrate: true,
-            volume: 0.8,
+            vibrate: isVibre,
+            volume: soundLevel / 10.0,
             fadeDuration: 3.0,
             notificationSettings: NotificationSettings(
               title: context.read<EditTaskCubit>().state.task.name,
