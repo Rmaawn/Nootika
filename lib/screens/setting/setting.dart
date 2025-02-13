@@ -17,7 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 213, 216, 251),
+      backgroundColor: const Color.fromARGB(255, 213, 216, 248),
             appBar: AppBar(
         backgroundColor: primaryColor,
         elevation: 0,
@@ -81,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                   child: ExpansionTile(
                     // collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: const Color.fromARGB(255, 204, 216, 240),
+                    backgroundColor: const Color.fromARGB(255, 232, 234, 255),
                     expandedCrossAxisAlignment: CrossAxisAlignment.start,
                     title: const Text('Sound',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                     children: [
@@ -104,7 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                   child: ExpansionTile(
                     // collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: const Color.fromARGB(255, 204, 216, 240),
+                    backgroundColor: const Color.fromARGB(255, 232, 234, 255),
                     expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                     title: const Text('Vibration',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)),
                     children: [
@@ -124,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                   child: ExpansionTile(
                     // collapsedBackgroundColor: const Color(0xff00CCDD),
-                    backgroundColor: const Color.fromARGB(255, 204, 216, 240),
+                    backgroundColor: const Color.fromARGB(255, 232, 234, 255),
                     expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                     title: const Text('Contact Us',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                     children: [

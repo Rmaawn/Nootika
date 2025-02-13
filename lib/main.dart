@@ -31,7 +31,7 @@ void main() async {
 
 const Color primaryColor = Color(0xff794CFF);
 const Color primaryContainer = Color(0xff5C0AFF);
-const secondaryTextColor = Color(0xffAFBED0);
+const secondaryTextColor = Color(0xffAFBED0); 
 const highPriority = primaryColor;
 const normalPriority = Color(0xffF09819);
 const lowPriority = Color(0xff3BE1F1);

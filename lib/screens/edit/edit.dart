@@ -30,7 +30,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   void initState() {
     final box = Hive.box('settings');
-    soundLevel = box.get('soundLevel', defaultValue: 6);
+    soundLevel = box.get('soundLevel', defaultValue: 6).toDouble();
     isVibre = box.get('isVibre', defaultValue: true);
     titleTaskController = TextEditingController(
         text: context.read<EditTaskCubit>().state.task.name);
