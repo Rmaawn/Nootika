@@ -180,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen>
                       topLeft: Radius.circular(_borderRadiusAnimation.value),
                     ),
                     child: GestureDetector(
-                      onHorizontalDragUpdate: (e) {
-                        if (e.delta.dx > 0) {
+                      onHorizontalDragEnd: (e) {
+                        if (e.primaryVelocity! > 0) {
                           _iconTapped();
                         }else{
                           _iconTapped();
