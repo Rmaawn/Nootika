@@ -30,16 +30,24 @@ class TitleTextField extends StatelessWidget {
           // cursorHeight: isForDescription ? 60 : null,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
-              border:null,
+              border: null,
               counter: Container(),
-              hintText:
-                  'Add Task for Today...',
-              prefixIcon:null,
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade300))),
+              labelText: 'Title',
+              prefixIcon: null,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+              
+
+                             filled: true,
+                fillColor: Colors.transparent,
+              enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+                  ),
           // onFieldSubmitted: (value) {},
         ),
       ),
@@ -61,26 +69,34 @@ class DesTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: ListTile(
         title: TextField(
-          onTapOutside: (event) =>FocusScope.of(context).unfocus(),
+          onTapOutside: (event) => FocusScope.of(context).unfocus(),
           onChanged: (value) {
             context.read<EditTaskCubit>().onDescriptionTextChanged(value);
           },
           controller: controller,
-          maxLines:null,
+          maxLines: null,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
-              border:InputBorder.none,
-              counter: Container(),
-              hintText:'Add Note...',
-              prefixIcon:const Icon(
-                      CupertinoIcons.bookmark,
-                      color: Colors.grey,
-                    ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade300))),
+            border: null,
+            counter: Container(),
+            labelText: 'Add Note...',
+            // icon: const Icon(
+            //   CupertinoIcons.bookmark,
+            //   color: Colors.grey,
+            // ),
+            filled: true,
+            fillColor: Colors.transparent,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+          ),
+
           // onFieldSubmitted: (value) {},
         ),
       ),
@@ -211,8 +227,6 @@ class Prioritypicker extends StatelessWidget {
   }
 }
 
-
-
 PageRouteBuilder effectRoute(Widget page) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => page,
@@ -226,7 +240,7 @@ PageRouteBuilder effectRoute(Widget page) {
       return SlideTransition(
         position: animation.drive(tween),
         child: child,
-        );
+      );
     },
   );
 }
