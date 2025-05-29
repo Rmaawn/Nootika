@@ -32,7 +32,10 @@ class TitleTextField extends StatelessWidget {
           decoration: InputDecoration(
               border: null,
               counter: Container(),
-              labelText: 'Title',
+              labelText: 'Name',
+            labelStyle: const TextStyle(
+              color: primaryTextColor,
+            ),
               prefixIcon: null,
             floatingLabelBehavior: FloatingLabelBehavior.always,
               
@@ -41,11 +44,11 @@ class TitleTextField extends StatelessWidget {
                 fillColor: Colors.transparent,
               enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: primaryTextColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: primaryTextColor),
             ),
                   ),
           // onFieldSubmitted: (value) {},
@@ -74,12 +77,15 @@ class DesTextField extends StatelessWidget {
             context.read<EditTaskCubit>().onDescriptionTextChanged(value);
           },
           controller: controller,
-          maxLines: null,
+          maxLines: 3,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             border: null,
             counter: Container(),
-            labelText: 'Add Note...',
+            labelText: 'Description',
+            labelStyle: const TextStyle(
+              color: primaryTextColor,
+            ),
             // icon: const Icon(
             //   CupertinoIcons.bookmark,
             //   color: Colors.grey,
@@ -89,11 +95,11 @@ class DesTextField extends StatelessWidget {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color:primaryTextColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: primaryTextColor),
             ),
           ),
 
@@ -164,14 +170,10 @@ class PriorityCheck extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
     return Container(
-      width: 20,
-      height: 20,
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.circular(10), color: color),
       child: value
-          ? Icon(
+          ? const Icon(
               CupertinoIcons.check_mark,
-              color: themeData.colorScheme.onPrimary,
+              color: primaryTextColor,
               size: 16,
             )
           : null,
@@ -196,13 +198,14 @@ class Prioritypicker extends StatelessWidget {
     // final ThemeData themeData = Theme.of(context);
 
     return InkWell(
+      borderRadius: BorderRadius.circular(24),
       onTap: callback,
       child: Container(
         height: 40,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(24),
           border:
-              Border.all(width: 2, color: secondaryTextColor.withOpacity(0.2)),
+              Border.all(width: 2, color: color),
         ),
         child: Stack(
           children: [

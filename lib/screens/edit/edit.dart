@@ -1,4 +1,5 @@
 import 'package:alarm/alarm.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,7 +66,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       backgroundColor: Colors.red,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),                      
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       content: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,8 +78,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           )
                         ],
                       )));
-                }else{
-                Share.share(context.read<EditTaskCubit>().state.task.name);
+                } else {
+                  Share.share(context.read<EditTaskCubit>().state.task.name);
                 }
               },
               child: const Icon(Icons.share, color: primaryTextColor),
@@ -135,14 +136,164 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              BlocBuilder<EditTaskCubit, EditTaskState>(
-                builder: (context, state) {
-                  final proirity = state.task.priority;
-                  return Flex(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+              child: EasyDateTimeLinePicker(
+                timelineOptions: const TimelineOptions(height: 86),
+                dayElementsOrder: const [
+                  DayElement.bottom(),
+                  MiddleDayElement()
+                ],
+                firstDate: DateTime(2025),
+                lastDate: DateTime(2030),
+                focusedDate: selectedDate,
+                onDateChange: (date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 24, left: 24, top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Schedule',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  Switch(
+                    value:
+                        context.read<EditTaskCubit>().state.task.taskreminder,
+                    onChanged: (value) {
+                      setState(() {
+                        !context.read<EditTaskCubit>().state.task.taskreminder
+                            ? ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: primaryColor,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      side: const BorderSide(
+                                          color: primaryContainer, width: 1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    content: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Reminder is Set Now Be Ready!'),
+                                        Icon(
+                                          Icons.alarm,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    )))
+                            : ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: Colors.grey.shade500,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                          color: Colors.grey.shade700,
+                                          width: 1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    content: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                            'Reminder is Off Now Be Cool!'),
+                                        Icon(
+                                          Icons.alarm_off,
+                                          color: Colors.grey.shade800,
+                                        )
+                                      ],
+                                    )));
+                        context.read<EditTaskCubit>().state.task.taskreminder =
+                            value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            TitleTextField(
+              controller: titleTaskController,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            DesTextField(
+              controller: descriptionTaskController,
+            ),
+            GestureDetector(
+              onTap: () async {
+                {
+                  await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  ).then((value) {
+                    if (value == null) {
+                      return;
+                    } else {
+                      setState(() {
+                        selectedTime = value;
+                      });
+                    }
+                  });
+                }
+              },
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(20),
+                height: 55,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                    ),
+                    borderRadius: BorderRadius.circular(12)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Text(
+                        selectedTime.format(context).toString(),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 12),
+                      width: 95,
+                      height: 35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade300),
+                      child: const Center(
+                          child: Text(
+                        'Pick Time',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      )),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            BlocBuilder<EditTaskCubit, EditTaskState>(
+              builder: (context, state) {
+                final proirity = state.task.priority;
+                return Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24),
+                  child: Flex(
                     direction: Axis.horizontal,
                     children: [
                       Flexible(
@@ -153,7 +304,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                   .read<EditTaskCubit>()
                                   .onPriorityChanged(Priority.high);
                             },
-                            label: 'high',
+                            label: 'High',
                             color: highPriority,
                             isSelected: proirity == Priority.high,
                           )),
@@ -168,7 +319,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                   .read<EditTaskCubit>()
                                   .onPriorityChanged(Priority.normal);
                             },
-                            label: 'normal',
+                            label: 'Medium',
                             color: normalPriority,
                             isSelected: proirity == Priority.normal,
                           )),
@@ -183,209 +334,16 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                   .read<EditTaskCubit>()
                                   .onPriorityChanged(Priority.low);
                             },
-                            label: 'low',
+                            label: 'Low',
                             color: lowPriority,
                             isSelected: proirity == Priority.low,
                           )),
                     ],
-                  );
-                },
-              ),
-              TitleTextField(
-                controller: titleTaskController,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DesTextField(
-                controller: descriptionTaskController,
-              ),
-              GestureDetector(
-                onTap: () async {
-                  {
-                    await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    ).then((value) {
-                      if (value == null) {
-                        return;
-                      } else {
-                        setState(() {
-                          selectedTime = value;
-                        });
-                      }
-                    });
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(20),
-                  height: 55,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Text(
-                          selectedTime.format(context).toString(),
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 12),
-                        width: 95,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey.shade300),
-                        child: const Center(
-                            child: Text(
-                          'Pick Time',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        )),
-                      )
-                    ],
                   ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  {
-                    final DateTime? dateTime = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2025),
-                      lastDate: DateTime(2030),
-                    );
-                    if (dateTime != null) {
-                      setState(() {
-                        selectedDate = dateTime;
-                      });
-                    }
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(20),
-                  height: 55,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Text(
-                          selectedDate.toString().substring(0, 11),
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 12),
-                        width: 95,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey.shade300),
-                        child: const Center(
-                            child: Text(
-                          'Pick Date',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        )),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 45,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Set Reminder',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                    Switch(
-                      value:
-                          context.read<EditTaskCubit>().state.task.taskreminder,
-                      onChanged: (value) {
-                        setState(() {
-                          !context.read<EditTaskCubit>().state.task.taskreminder
-                              ? ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      duration: const Duration(seconds: 2),
-                                      backgroundColor: primaryColor,
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        side: const BorderSide(
-                                            color: primaryContainer, width: 1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      content: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Reminder is Set Now Be Ready!'),
-                                          Icon(
-                                            Icons.alarm,
-                                            color: Colors.white,
-                                          )
-                                        ],
-                                      )))
-                              : ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      duration: const Duration(seconds: 2),
-                                      backgroundColor: Colors.grey.shade500,
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Colors.grey.shade700,
-                                            width: 1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      content: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                              'Reminder is Off Now Be Cool!'),
-                                          Icon(
-                                            Icons.alarm_off,
-                                            color: Colors.grey.shade800,
-                                          )
-                                        ],
-                                      )));
-                          context
-                              .read<EditTaskCubit>()
-                              .state
-                              .task
-                              .taskreminder = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
