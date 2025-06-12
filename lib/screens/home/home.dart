@@ -403,11 +403,11 @@ class TaskList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Today',
+                      'Tasks',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Container(
-                      width: 50,
+                      width: 43,
                       height: 3,
                       margin: const EdgeInsets.only(top: 4),
                       decoration: BoxDecoration(

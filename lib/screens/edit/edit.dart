@@ -1,4 +1,5 @@
 import 'package:alarm/alarm.dart';
+import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +158,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 24, left: 24, top: 8),
+              padding: const EdgeInsets.fromLTRB(32, 12, 32, 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -165,60 +166,66 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     'Schedule',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  Switch(
-                    value:
-                        context.read<EditTaskCubit>().state.task.taskreminder,
-                    onChanged: (value) {
-                      setState(() {
-                        !context.read<EditTaskCubit>().state.task.taskreminder
-                            ? ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(
-                                    duration: const Duration(seconds: 2),
-                                    backgroundColor: primaryColor,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      side: const BorderSide(
-                                          color: primaryContainer, width: 1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    content: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Reminder is Set Now Be Ready!'),
-                                        Icon(
-                                          Icons.alarm,
-                                          color: Colors.white,
-                                        )
-                                      ],
-                                    )))
-                            : ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(
-                                    duration: const Duration(seconds: 2),
-                                    backgroundColor: Colors.grey.shade500,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          color: Colors.grey.shade700,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    content: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                            'Reminder is Off Now Be Cool!'),
-                                        Icon(
-                                          Icons.alarm_off,
-                                          color: Colors.grey.shade800,
-                                        )
-                                      ],
-                                    )));
-                        context.read<EditTaskCubit>().state.task.taskreminder =
-                            value;
-                      });
-                    },
+                  Transform.scale(
+                    scale: 0.9,
+                    child: Switch(
+                      value:
+                          context.read<EditTaskCubit>().state.task.taskreminder,
+                      onChanged: (value) {
+                        setState(() {
+                          !context.read<EditTaskCubit>().state.task.taskreminder
+                              ? ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      duration: const Duration(seconds: 2),
+                                      backgroundColor: primaryColor,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        side: const BorderSide(
+                                            color: primaryContainer, width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      content: const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Reminder is Set Now Be Ready!'),
+                                          Icon(
+                                            Icons.alarm,
+                                            color: Colors.white,
+                                          )
+                                        ],
+                                      )))
+                              : ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      duration: const Duration(seconds: 2),
+                                      backgroundColor: Colors.grey.shade500,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Colors.grey.shade700,
+                                            width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      content: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                              'Reminder is Off Now Be Cool!'),
+                                          Icon(
+                                            Icons.alarm_off,
+                                            color: Colors.grey.shade800,
+                                          )
+                                        ],
+                                      )));
+                          context
+                              .read<EditTaskCubit>()
+                              .state
+                              .task
+                              .taskreminder = value;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -232,116 +239,140 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             DesTextField(
               controller: descriptionTaskController,
             ),
-            GestureDetector(
-              onTap: () async {
-                {
-                  await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  ).then((value) {
-                    if (value == null) {
-                      return;
-                    } else {
-                      setState(() {
-                        selectedTime = value;
-                      });
-                    }
-                  });
-                }
-              },
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(20),
-                height: 55,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey.shade300,
-                    ),
-                    borderRadius: BorderRadius.circular(12)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Text(
-                        selectedTime.format(context).toString(),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
+            Padding(
+              padding: const EdgeInsets.only(left: 12, right: 12),
+              child: GestureDetector(
+                onTap: () async {
+                  {
+                    await Navigator.of(context).push(showPicker(
+                      context: context,
+                      value: Time(
+                          hour: selectedTime.hour, minute: selectedTime.minute),
+                      onChange: (p0) {
+                        setState(() {
+                          selectedTime =
+                              TimeOfDay(hour: p0.hour, minute: p0.minute);
+                        });
+                      },
+                    ));
+
+                    // await showTimePicker(
+                    //   context: context,
+                    //   initialTime: TimeOfDay.now(),
+                    // ).then((value) {
+                    //   if (value == null) {
+                    //     return;
+                    //   } else {
+                    //     setState(() {
+                    //       selectedTime = value;
+                    //     });
+                    //   }
+                    // });
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(20),
+                  height: 55,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade300,
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 12),
-                      width: 95,
-                      height: 35,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.grey.shade300),
-                      child: const Center(
-                          child: Text(
-                        'Pick Time',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      )),
-                    )
-                  ],
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          selectedTime.format(context).toString(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        width: 95,
+                        height: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey.shade300),
+                        child: const Center(
+                            child: Text(
+                          'Pick Time',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        )),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-            BlocBuilder<EditTaskCubit, EditTaskState>(
-              builder: (context, state) {
-                final proirity = state.task.priority;
-                return Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24),
-                  child: Flex(
-                    direction: Axis.horizontal,
-                    children: [
-                      Flexible(
-                          flex: 1,
-                          child: Prioritypicker(
-                            callback: () {
-                              context
-                                  .read<EditTaskCubit>()
-                                  .onPriorityChanged(Priority.high);
-                            },
-                            label: 'High',
-                            color: highPriority,
-                            isSelected: proirity == Priority.high,
-                          )),
-                      const SizedBox(
-                        width: 8,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 24, bottom: 8, top: 28),
+                  child: Text("Priority"),
+                ),
+                BlocBuilder<EditTaskCubit, EditTaskState>(
+                  builder: (context, state) {
+                    final proirity = state.task.priority;
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        children: [
+                          Flexible(
+                              flex: 1,
+                              child: Prioritypicker(
+                                callback: () {
+                                  context
+                                      .read<EditTaskCubit>()
+                                      .onPriorityChanged(Priority.high);
+                                },
+                                label: 'High',
+                                color: highPriority,
+                                isSelected: proirity == Priority.high,
+                              )),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Flexible(
+                              flex: 1,
+                              child: Prioritypicker(
+                                callback: () {
+                                  context
+                                      .read<EditTaskCubit>()
+                                      .onPriorityChanged(Priority.normal);
+                                },
+                                label: 'Medium',
+                                color: normalPriority,
+                                isSelected: proirity == Priority.normal,
+                              )),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Flexible(
+                              flex: 1,
+                              child: Prioritypicker(
+                                callback: () {
+                                  context
+                                      .read<EditTaskCubit>()
+                                      .onPriorityChanged(Priority.low);
+                                },
+                                label: 'Low',
+                                color: lowPriority,
+                                isSelected: proirity == Priority.low,
+                              )),
+                        ],
                       ),
-                      Flexible(
-                          flex: 1,
-                          child: Prioritypicker(
-                            callback: () {
-                              context
-                                  .read<EditTaskCubit>()
-                                  .onPriorityChanged(Priority.normal);
-                            },
-                            label: 'Medium',
-                            color: normalPriority,
-                            isSelected: proirity == Priority.normal,
-                          )),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Flexible(
-                          flex: 1,
-                          child: Prioritypicker(
-                            callback: () {
-                              context
-                                  .read<EditTaskCubit>()
-                                  .onPriorityChanged(Priority.low);
-                            },
-                            label: 'Low',
-                            color: lowPriority,
-                            isSelected: proirity == Priority.low,
-                          )),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

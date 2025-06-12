@@ -168,7 +168,7 @@ class PriorityCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData themeData = Theme.of(context);
+    // final ThemeData themeData = Theme.of(context);
     return Container(
       child: value
           ? const Icon(
