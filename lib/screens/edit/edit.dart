@@ -47,6 +47,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return Scaffold(
       backgroundColor: themeData.colorScheme.surface,
       appBar: AppBar(
+        centerTitle: true,
         // systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Color(0xff794CFF)),
         elevation: 0,
         backgroundColor: themeData.colorScheme.surface,
@@ -89,58 +90,67 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final alarmDateTime = DateTime(
-            selectedDate.year,
-            selectedDate.month,
-            selectedDate.day,
-            selectedTime.hour,
-            selectedTime.minute,
-          );
-          final alarmSettings = AlarmSettings(
-            id: 42,
-            dateTime: alarmDateTime,
-            assetAudioPath: 'assets/blank.mp3',
-            loopAudio: true,
-            vibrate: isVibre,
-            volume: soundLevel / 10.0,
-            fadeDuration: 3.0,
-            notificationSettings: NotificationSettings(
-              title: context.read<EditTaskCubit>().state.task.name,
-              body: context.read<EditTaskCubit>().state.task.description,
-              stopButton: "I Can Do it later",
-              icon: 'notification_icon',
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 16, left: 16),
+        child: SizedBox(
+          width: double.infinity,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(36),
+            child: FloatingActionButton.extended(
+              onPressed: () async {
+                final alarmDateTime = DateTime(
+                  selectedDate.year,
+                  selectedDate.month,
+                  selectedDate.day,
+                  selectedTime.hour,
+                  selectedTime.minute,
+                );
+                final alarmSettings = AlarmSettings(
+                  id: 42,
+                  dateTime: alarmDateTime,
+                  assetAudioPath: 'assets/blank.mp3',
+                  loopAudio: true,
+                  vibrate: isVibre,
+                  volume: soundLevel / 10.0,
+                  fadeDuration: 3.0,
+                  notificationSettings: NotificationSettings(
+                    title: context.read<EditTaskCubit>().state.task.name,
+                    body: context.read<EditTaskCubit>().state.task.description,
+                    stopButton: "I Can Do it later",
+                    icon: 'notification_icon',
+                  ),
+                );
+                if (context.read<EditTaskCubit>().state.task.taskreminder) {
+                  await Alarm.set(alarmSettings: alarmSettings);
+                  // loadAlarms();
+                }
+                // loadAlarms();
+                context.read<EditTaskCubit>().state.task.tasktime = selectedTime;
+                context.read<EditTaskCubit>().state.task.taskdate = selectedDate;
+                context.read<EditTaskCubit>().onSaveChangesClick();
+                Navigator.of(context).pop();
+              },
+              label: const Row(
+                children: [
+                  Text('Save Changes'),
+                  SizedBox(
+                    width: 6,
+                  ),
+                  Icon(
+                    CupertinoIcons.check_mark,
+                    // size: 24,
+                  ),
+                ],
+              ),
             ),
-          );
-          if (context.read<EditTaskCubit>().state.task.taskreminder) {
-            await Alarm.set(alarmSettings: alarmSettings);
-            // loadAlarms();
-          }
-          // loadAlarms();
-          context.read<EditTaskCubit>().state.task.tasktime = selectedTime;
-          context.read<EditTaskCubit>().state.task.taskdate = selectedDate;
-          context.read<EditTaskCubit>().onSaveChangesClick();
-          Navigator.of(context).pop();
-        },
-        label: const Row(
-          children: [
-            Text('Save Changes'),
-            SizedBox(
-              width: 6,
-            ),
-            Icon(
-              CupertinoIcons.check_mark,
-              // size: 24,
-            ),
-          ],
+          ),
         ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
               child: EasyDateTimeLinePicker(
                 timelineOptions: const TimelineOptions(height: 86),
                 dayElementsOrder: const [
@@ -167,7 +177,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   Transform.scale(
-                    scale: 0.9,
+                    scale: 0.8,
                     child: Switch(
                       value:
                           context.read<EditTaskCubit>().state.task.taskreminder,
@@ -245,6 +255,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 onTap: () async {
                   {
                     await Navigator.of(context).push(showPicker(
+                      is24HrFormat: true,
                       context: context,
                       value: Time(
                           hour: selectedTime.hour, minute: selectedTime.minute),
@@ -283,16 +294,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Text(
-                          selectedTime.format(context).toString(),
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 12),
+                                            Container(
+                        margin: const EdgeInsets.only(left: 16),
                         width: 95,
                         height: 35,
                         decoration: BoxDecoration(
@@ -304,7 +307,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w500),
                         )),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: Text(
+                          selectedTime.format(context).toString(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -314,7 +325,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(left: 24, bottom: 8, top: 28),
+                  padding: EdgeInsets.only(left: 24, bottom: 8, top: 12),
                   child: Text("Priority"),
                 ),
                 BlocBuilder<EditTaskCubit, EditTaskState>(

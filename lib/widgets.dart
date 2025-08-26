@@ -44,7 +44,7 @@ class TitleTextField extends StatelessWidget {
                 fillColor: Colors.transparent,
               enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: primaryTextColor),
+              borderSide: const BorderSide(color: Colors.black38),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -77,7 +77,7 @@ class DesTextField extends StatelessWidget {
             context.read<EditTaskCubit>().onDescriptionTextChanged(value);
           },
           controller: controller,
-          maxLines: 3,
+          maxLines: 4,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             border: null,
@@ -95,7 +95,7 @@ class DesTextField extends StatelessWidget {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color:primaryTextColor),
+              borderSide: const BorderSide(color: Colors.black38),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

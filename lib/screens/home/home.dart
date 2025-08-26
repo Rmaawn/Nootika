@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen>
                       onHorizontalDragEnd: (e) {
                         if (e.primaryVelocity! > 0) {
                           _iconTapped();
-                        }else{
+                        } else {
                           _iconTapped();
                         }
                       },
@@ -269,7 +269,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                           .headlineMedium),
                                                   InkWell(
                                                     onTap: () {
-                                                      Share.share('https://github.com/Rmaawn');
+                                                      Share.share(
+                                                          'https://github.com/Rmaawn');
                                                     },
                                                     child: Icon(
                                                       Icons.share,
@@ -577,14 +578,13 @@ class _TaskitemState extends State<Taskitem> {
           height: Taskitem.height,
           padding: const EdgeInsets.only(left: 16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(Taskitem.borderradius),
-            color: widget.task.isCompleted
-                ? Colors.grey.shade300
-                : themeData.colorScheme.surface,
-            // boxShadow: [
-            //   BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(0.1))
-            // ]
-          ),
+              borderRadius: BorderRadius.circular(Taskitem.borderradius),
+              color: widget.task.isCompleted
+                  ? Colors.grey.shade300
+                  : prioritycolor.withAlpha(50),
+              boxShadow: [
+                BoxShadow(blurRadius: 20, color: Colors.white.withAlpha(10))
+              ]),
           child: Row(
             children: [
               MyCheckbox(

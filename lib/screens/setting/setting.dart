@@ -154,6 +154,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     BorderRadius.circular(10),
                                               ),
                                               content: const Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Copied'),
                                                   SizedBox(width: 4),
@@ -164,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 ],
                                               )));
                                       Clipboard.setData(const ClipboardData(
-                                          text: '@R_mmawn'));
+                                          text: '@R_maawn'));
                                     },
                                     child: const Icon(
                                       Icons.content_copy,
@@ -173,12 +174,12 @@ class _SettingsPageState extends State<SettingsPage> {
                               ],
                             ),
                             const SizedBox(
-                              height: 2,
+                              height: 8,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Instagramn'),
+                                const Text('Email'),
                                 InkWell(
                                     onTap: () {
                                       ScaffoldMessenger.of(context)
@@ -198,6 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     BorderRadius.circular(10),
                                               ),
                                               content: const Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Copied'),
                                                   SizedBox(width: 4),
@@ -208,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 ],
                                               )));
                                       Clipboard.setData(
-                                          const ClipboardData(text: 'arm.wan'));
+                                          const ClipboardData(text:'armanmohebali@outlook.com'));
                                     },
                                     child: const Icon(
                                       Icons.content_copy,
@@ -217,7 +219,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ],
                             ),
                             const SizedBox(
-                              height: 2,
+                              height: 8,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,6 +244,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     BorderRadius.circular(10),
                                               ),
                                               content: const Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Copied'),
                                                   SizedBox(width: 4),
@@ -261,7 +264,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ],
                             ),
                             const SizedBox(
-                              height: 6,
+                              height: 8,
                             ),
                             const Text('Made With ❤️ By Rmaan'),
                             const Text('v0.10')
